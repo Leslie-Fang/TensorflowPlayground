@@ -1,7 +1,7 @@
 import cv2
 import matplotlib.pyplot as plt
 
-img = cv2.imread('./pic/figure_6.png')
+img = cv2.imread('./pic/figure_9.png')
 img = cv2.GaussianBlur(img,(5,5),0)
 
 print("origin")
@@ -66,15 +66,15 @@ print h
 # enlarge the image to have more paddleing space
 n = 100
 xbegin = x-n
+xend = x + w + n
+ybegin = y - n
+yend = y + h + n
 if xbegin < 0:
     xbegin = 0
-xend = x + w + n
 if xend > dilated.shape[1]:
     xend = dilated.shape[1]
-ybegin = y - n
 if ybegin < 0:
     ybegin = 0
-yend = y + h + n
 if yend > dilated.shape[0]:
     yend = dilated.shape[0]
 
