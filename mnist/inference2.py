@@ -5,13 +5,19 @@ import matplotlib.image as mpimg
 
 import tensorflow as tf
 import cv2
-
+import os
 FLAGS = None
 
-def main(_):
-    # Import data
-    #mnist = input_data.read_data_sets(FLAGS.data_dir, one_hot=True)
-    img = cv2.imread("res.png",0);
+def main(inputImageNumber):
+    basepath = "./image/figure_"
+    inputImage = basepath + inputImageNumber + ".png"
+    if os.path.isfile(inputImage):
+        pass
+    else:
+        print("The file doesn't exsit")
+        print("exit")
+        exit(-1)
+    img = cv2.imread(inputImage,0)
     plt.imshow(img)
     plt.show()
     # define input varable
@@ -40,5 +46,8 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--data_dir', type=str, default='/tmp/tensorflow/mnist/input_data',
                       help='Directory for storing input data')
+    parser.add_argument('-n', action="store", help='an integer for the accumulator', dest='inputImagePath')
     FLAGS, unparsed = parser.parse_known_args()
-    tf.app.run(main=main, argv=[sys.argv[0]] + unparsed)
+    args = parser.parse_args()
+    main(args.inputImagePath)
+    #tf.app.run(main=main, argv=[sys.argv[0]] + unparsed)
