@@ -2,7 +2,7 @@
 
 using namespace std;
 
-int add(int x,int y){
+extern "C" int add(int x,int y){
     cout<<"prepare to add!"<<endl;
     return x+y;
 }
