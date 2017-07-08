@@ -10,7 +10,7 @@ def Myargparse():
     return args
 
 def preprocess(imageNumber):
-    base_path="./pic/figure_"
+    base_path="./pic3/figure_"
     base_destinamtion = "./image/figure_"
     if os.path.exists("./image/"):
         pass
@@ -35,13 +35,13 @@ def preprocess(imageNumber):
 
     print("grey")
     GrayImage = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
-    #plt.imshow(GrayImage,cmap = 'gray', interpolation = 'bicubic')
-    #plt.show()
+    plt.imshow(GrayImage,cmap = 'gray', interpolation = 'bicubic')
+    plt.show()
 
     print("thresh")
     ret,threshImage = cv2.threshold(GrayImage,60,255,cv2.THRESH_BINARY_INV)
-    #plt.imshow(threshImage,cmap = 'gray', interpolation = 'bicubic')
-    #plt.show()
+    plt.imshow(threshImage,cmap = 'gray', interpolation = 'bicubic')
+    plt.show()
 
     #OpenCV structure element
     kernel = cv2.getStructuringElement(cv2.MORPH_RECT,(3, 3))
@@ -50,8 +50,8 @@ def preprocess(imageNumber):
     print("dilated's size: ")
     print(dilated.shape)
     print("erode and dilated: ")
-    #plt.imshow(dilated,cmap = 'gray', interpolation = 'bicubic')
-    #plt.show()
+    plt.imshow(dilated,cmap = 'gray', interpolation = 'bicubic')
+    plt.show()
 
 
     print("contours")

@@ -2,7 +2,6 @@ import argparse
 import sys
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
-
 import tensorflow as tf
 import cv2
 import os
@@ -18,7 +17,7 @@ def main(inputImageNumber):
         print("exit")
         exit(-1)
     img = cv2.imread(inputImage,0)
-    plt.imshow(img)
+    plt.imshow(img,cmap = 'gray', interpolation = 'bicubic')
     plt.show()
     # define input varable
     x = tf.placeholder(tf.float32, [None, 784])
