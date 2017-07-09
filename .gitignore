@@ -8,4 +8,6 @@
 /*/cma*/*o
 /*/.idea/*
 /.idea/*/*
-/.idea/*
+/.idea/
+/*/*.pyc*
+/*/*.png
