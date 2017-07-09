@@ -1,8 +1,11 @@
 /node_modules/*
 *.local
-./*/pic*/*
-./*/ima*/
-./*/*.so
-./*/main
-./*/*.
-./*/cma*/*o
+/*/pic*/*
+/*/ima*/*
+/*/*.so
+/*/*.o
+/*/main
+/*/cma*/*o
+/*/.idea/*
+/.idea/*/*
+/.idea/*
