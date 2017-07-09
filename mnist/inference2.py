@@ -7,9 +7,9 @@ import cv2
 import os
 FLAGS = None
 
-def main(inputImagepath,inputImagename):
-    basepath = "./image/"
-    inputImage = basepath + inputImagename
+def main(inputImagePath):
+    basepath = "./image/figure_"
+    inputImage = basepath + inputImagePath + ".png"
     if os.path.isfile(inputImage):
         pass
     else:

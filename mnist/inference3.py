@@ -32,11 +32,12 @@ def main(inputImagepath,inputImagename,sess,W,b):
     # define input varable
     x = tf.placeholder(tf.float32, [None, 784])
     y = tf.nn.softmax(tf.matmul(x, W) + b)
-    print("restore the model!")
-    print img.shape
+    #print("restore the model!")
+    #print img.shape
+    print "The img is: "
     print img
-    print("reshape")
-    print img.reshape(1,784)
+    #print("reshape")
+    #print img.reshape(1,784)
     ret = sess.run(y, feed_dict={x: img.reshape(1, 784)})
     print(ret)
     print("prediction result:%d"%(ret.argmax()))

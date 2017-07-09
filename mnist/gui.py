@@ -16,8 +16,8 @@ class Application(Frame):
         self.resimage = cv2.imread('test.png')
         self.predictionResult = StringVar()
         self.predictionResult.set("The image we predicted is: unKnown")
-        self.createWidgets()
         self.sess,self.W,self.b = infer.restoreModel()
+        self.createWidgets()
 
     def __del__(self):
         self.cap.release()
@@ -30,7 +30,7 @@ class Application(Frame):
         self.inputLabel.grid(row=1, column=0,sticky=W)
 
         self.nameInput = Entry(self)
-        self.nameInput.insert(END, './pic4/')
+        self.nameInput.insert(END, './pic3/')
         self.nameInput.grid(row=1, column=1)
 
         self.inputLabel2 = Label(self, text='Image name: ')
