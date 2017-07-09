@@ -19,6 +19,10 @@ def restoreModel():
 
 def main(inputImagepath,inputImagename,sess,W,b):
     basepath = "./image/"
+    if os.path.exists(basepath):
+        pass
+    else:
+        os.system("mkdir image")
     inputImage = basepath + inputImagename
     if os.path.isfile(inputImage):
         pass
