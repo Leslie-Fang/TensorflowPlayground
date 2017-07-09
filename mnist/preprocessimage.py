@@ -9,21 +9,25 @@ def Myargparse():
     args = parser.parse_args()
     return args
 
-def preprocess(imageNumber):
-    base_path="./pic3/figure_"
-    base_destinamtion = "./image/figure_"
-    if os.path.exists("./image/"):
-        pass
-    else:
-        os.system("mkdir image")
-    inputImagepath = base_path + imageNumber + ".png"
+def preprocess(inputImagepath,inputImagename):
+    #base_path="./pic3/figure_"
+    #base_destinamtion = "./image/figure_"
+    #if os.path.exists("./image/"):
+    #    pass
+    #else:
+    #    os.system("mkdir image")
+    #inputImagepath = base_path + imageNumber + ".png"
+    inputImagepath = inputImagepath + inputImagename
     if os.path.isfile(inputImagepath):
         pass
     else:
         print("The file doesn't exsit")
         print("exit")
         exit(-1)
-    outputImagepath = base_destinamtion + imageNumber + ".png"
+    #outputImagepath = base_destinamtion + imageNumber + ".png
+
+    outputImagepath = "./image/" + inputImagename
+
     #img = cv2.imread('./pic2/figure_9.png')
     print inputImagepath
     img = cv2.imread(inputImagepath)

@@ -11,8 +11,9 @@ while(1):
     # show a frame
     #cv2.imshow("capture", frame)
     plt.imshow(frame,cmap = 'gray', interpolation = 'bicubic')
-    plt.show()
-    time.sleep(3)
+    plt.show(block=False)
+    plt.pause(3)
+    #time.sleep(3)
     plt.close()
     print n
     n = n + 1
@@ -21,4 +22,4 @@ while(1):
     #if cv2.waitKey(1) & 0xFF == ord('q'):
     #    break
 cap.release()
-cv2.destroyAllWindows()
+#cv2.destroyAllWindows()

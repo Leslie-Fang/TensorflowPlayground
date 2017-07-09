@@ -7,7 +7,17 @@ import cv2
 import os
 FLAGS = None
 
-def main(inputImagepath,inputImagename):
+# comparing with inference2, inference3 is used to call in the gui.py
+def restoreModel():
+    # define parameter
+    W = tf.Variable(tf.zeros([784, 10]))
+    b = tf.Variable(tf.zeros([10]))
+    saver = tf.train.Saver([W, b])
+    sess = tf.Session()
+    saver.restore(sess, "./model/model.ckpt")
+    return sess,W,b
+
+def main(inputImagepath,inputImagename,sess,W,b):
     basepath = "./image/"
     inputImage = basepath + inputImagename
     if os.path.isfile(inputImage):
@@ -21,22 +31,12 @@ def main(inputImagepath,inputImagename):
     plt.show()
     # define input varable
     x = tf.placeholder(tf.float32, [None, 784])
-    # define parameter
-    W = tf.Variable(tf.zeros([784, 10]))
-    b = tf.Variable(tf.zeros([10]))
-    # define the model
     y = tf.nn.softmax(tf.matmul(x, W) + b)
-    saver = tf.train.Saver([W, b])
-    sess = tf.Session()
-    saver.restore(sess, "./model/model.ckpt")
     print("restore the model!")
     print img.shape
     print img
     print("reshape")
     print img.reshape(1,784)
-    #inputImg = img.reshape(1,784)
-    #print inputImg.shape
-    # calculate the result
     ret = sess.run(y, feed_dict={x: img.reshape(1, 784)})
     print(ret)
     print("prediction result:%d"%(ret.argmax()))
