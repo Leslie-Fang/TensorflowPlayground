@@ -27,7 +27,10 @@ def preprocess(inputImagepath,inputImagename):
     #outputImagepath = base_destinamtion + imageNumber + ".png
 
     outputImagepath = "./image/" + inputImagename
-
+    if os.path.exists("./image/"):
+        pass
+    else:
+        os.system("mkdir image")
     #img = cv2.imread('./pic2/figure_9.png')
     print inputImagepath
     img = cv2.imread(inputImagepath)
