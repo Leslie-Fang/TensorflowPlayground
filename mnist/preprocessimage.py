@@ -92,7 +92,7 @@ def preprocess(inputImagepath,inputImagename):
 
     # put the digit in the middle of the image
     # enlarge the image to have more paddleing space
-    n = 100
+    n = 150
     xbegin = x-n
     xend = x + w + n
     ybegin = y - n
