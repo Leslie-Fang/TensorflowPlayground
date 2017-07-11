@@ -15,6 +15,7 @@ def restoreModel():
     saver = tf.train.Saver([W, b])
     sess = tf.Session()
     saver.restore(sess, "./model/model.ckpt")
+    file_writer = tf.summary.FileWriter('.', sess.graph)
     return sess,W,b
 
 def main(inputImagepath,inputImagename,sess,W,b):
