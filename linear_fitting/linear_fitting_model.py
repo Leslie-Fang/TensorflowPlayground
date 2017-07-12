@@ -1,7 +1,7 @@
 import numpy as np
 import tensorflow as tf
 
-# the model should be y = W*x + b
+# the model should be y = W*x + b, moreover, we set the model as y = 2*x + 1
 # x is the input the data, y should be the output
 # y should be calculated, but we don't know the true value of the parameter of W and b
 # that's why we would use machining learning to get them
