@@ -4,7 +4,7 @@
 ## 图像预处理
 preprocessimage.py
 读取摄像头拍摄到的手写数字的图片
-对图片进行[预处理](!https://leslie-fang.github.io/2017/07/06/手写数字识别/)
+对图片进行[预处理](https://leslie-fang.github.io/2017/07/06/手写数字识别/)
 保存预处理之后的图片到 /image目录下面
 
 ## 使用softmax进行手写数字识别
@@ -27,7 +27,7 @@ python gui.py
 ```
 
 ## 使用CNN进行手写数字识别
-模型保存在 model2的目录下面,整个模型的[介绍](!https://leslie-fang.github.io/2017/07/15/卷积神经网络/)
+模型保存在 model2的目录下面,整个模型的[介绍](https://leslie-fang.github.io/2017/07/15/卷积神经网络/)
 * inference_deep.py
 输入为image目录下面的预处理之后的图片，调用训练之后的模型，得到训练结果
 使用方法
