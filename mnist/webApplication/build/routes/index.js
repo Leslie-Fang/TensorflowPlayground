@@ -1,0 +1,1 @@
+var express=require("express"),router=express.Router();router.get("/",function(e,r){r.send("hello world")}),module.exports=router;
