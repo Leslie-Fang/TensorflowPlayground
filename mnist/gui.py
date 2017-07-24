@@ -7,6 +7,7 @@ import time
 import os
 import preprocessimage as ppi
 import inference3 as infer
+import serial
 
 class Application(Frame):
     def __init__(self, master=None):
@@ -18,9 +19,12 @@ class Application(Frame):
         self.predictionResult.set("The image we predicted is: unKnown")
         self.sess,self.W,self.b = infer.restoreModel()
         self.createWidgets()
+        self.ser = serial.Serial('/dev/tty.usbserial-A6YT1ITY', 57600, timeout=1)
+        self.res = 0
 
     def __del__(self):
         self.cap.release()
+        self.ser.close()
 
     def createWidgets(self):
         self.helloLabel = Label(self, text='Welcome to the HandWriting Digit App!')
@@ -55,8 +59,11 @@ class Application(Frame):
         self.inputLabel3 = Label(self, textvariable=self.predictionResult)
         self.inputLabel3.grid(row=3, columnspan=4,sticky=W)
 
+        self.sendButton = Button(self, text='Send', command=self.send)
+        self.sendButton.grid(row=4, column=1,columnspan=1)
+
         self.quitButton = Button(self, text='Quit', command=self.quit)
-        self.quitButton.grid(row=4, columnspan=4)
+        self.quitButton.grid(row=4, column=2,columnspan=1)
 
     def shoot(self):
         #vidcap = cv2.VideoCapture()
@@ -84,8 +91,12 @@ class Application(Frame):
     def imagePredict(self):
         inputPath = self.nameInput.get()
         inputName = self.nameInput2.get()
-        res = infer.main(inputPath, inputName,self.sess,self.W,self.b)
-        self.predictionResult.set("The image we predicted is: "+str(res))
+        self.res = infer.main(inputPath, inputName,self.sess,self.W,self.b)
+        self.predictionResult.set("The image we predicted is: "+str(self.res))
+
+    def send(self):
+        sendData = str(self.res) + "\n"
+        self.ser.write(sendData)
 
 if __name__ == "__main__":
     app = Application()
