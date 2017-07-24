@@ -19,12 +19,10 @@ class Application(Frame):
         self.predictionResult.set("The image we predicted is: unKnown")
         self.sess,self.W,self.b = infer.restoreModel()
         self.createWidgets()
-        self.ser = serial.Serial('/dev/tty.usbserial-A6YT1ITY', 57600, timeout=1)
         self.res = 0
 
     def __del__(self):
         self.cap.release()
-        self.ser.close()
 
     def createWidgets(self):
         self.helloLabel = Label(self, text='Welcome to the HandWriting Digit App!')
@@ -95,8 +93,11 @@ class Application(Frame):
         self.predictionResult.set("The image we predicted is: "+str(self.res))
 
     def send(self):
+        ser = serial.Serial('/dev/tty.usbserial-A6YT1ITY', 57600, timeout=1)
         sendData = str(self.res) + "\n"
-        self.ser.write(sendData)
+        ser.write(sendData)
+        #time.sleep(1)
+        ser.close()
 
 if __name__ == "__main__":
     app = Application()
