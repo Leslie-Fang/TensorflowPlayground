@@ -67,8 +67,13 @@ class Application(Frame):
         #vidcap = cv2.VideoCapture()
         ret, image = self.cap.read()
         self.resimage = image
-        plt.imshow(image)
-        plt.show()
+        #time.sleep(2)
+        if image == None or image.size == 0:
+            print("Couldn't shoot picture, need to be reset.")
+            pass
+        else:
+            plt.imshow(image)
+            plt.show()
 
     def saveImage(self):
         inputPath = self.nameInput.get()
@@ -95,8 +100,9 @@ class Application(Frame):
     def send(self):
         ser = serial.Serial('/dev/tty.usbserial-A6YT1ITY', 57600, timeout=1)
         sendData = str(self.res) + "\n"
+        print("sending prediction number" + str(self.res))
         ser.write(sendData)
-        #time.sleep(1)
+        time.sleep(1)
         ser.close()
 
 if __name__ == "__main__":
