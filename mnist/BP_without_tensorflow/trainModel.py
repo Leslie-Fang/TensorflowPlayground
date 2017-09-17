@@ -11,7 +11,7 @@ def softmax(x):
     return e_x / e_x.sum()
 
 
-def trainModel(image,label,learning_rate,w1, w2):
+def trainModel(image,label,learning_rate,w1, w2,b1,b2):
     # input layer
     rawData = np.array(image).reshape((784,), order='C')
 
@@ -36,15 +36,20 @@ def trainModel(image,label,learning_rate,w1, w2):
         Etotal = Etotal + math.pow((outo[i] - target[i]), 2)
     # print Etotal
     dw2 = np.zeros((100, 10))
+    db2 = np.random.random((10))
     for i in range(dw2.shape[0]):
         for j in range(dw2.shape[1]):
             dw2[i, j] = -(target[j] - outo[j]) * outo[j] * (1 - outo[j]) * outh[j]
             w2[i, j] = w2[i, j] - learning_rate * dw2[i, j]
-
+    for i in range(10):
+        for j in range(10):
+            db2[i] =  -(target[j] - outo[j]) * outo[j] * (1 - outo[j])
+            b2[i] = b2[i] - learning_rate * db2[i]
     # print w2
 
     ### hidden layer
     dw1 = np.zeros((784, 100))
+    db1 = np.random.random((100))
     for i in range(dw1.shape[0]):
         for j in range(dw1.shape[1]):
             suberror = 0
@@ -53,7 +58,15 @@ def trainModel(image,label,learning_rate,w1, w2):
             dw1[i, j] = suberror * outh[j] * (1 - outh[j]) * rawData[i]
             w1[i, j] = w1[i, j] - learning_rate * dw1[i, j]
     # print w1
-    return w1,w2,y_,Etotal
+    for i in range(100):
+        for j in range(100):
+            suberror = 0
+            for z in range(10):
+                suberror = suberror + (-(target[z] - outo[z]) * outo[z] * (1 - outo[z]) * w2[j, z])
+            db1[i] = suberror * outh[j] * (1 - outh[j])
+            b1[i] = b1[i] - db1[i]
+
+    return w1,w2,b1,b2,y_,Etotal
 
 
 if __name__ == "__main__":
@@ -77,9 +90,20 @@ if __name__ == "__main__":
         lines = f.readlines()
         for i in range(lines.__len__()):
             image, label = preProcess(lines[i])
-            w1,w2,y_,Etotal = trainModel(image, label, learning_rate, w1, w2)
+            w1,w2,b1,b2,y_,Etotal = trainModel(image, label, learning_rate, w1, w2,b1,b2)
             print("The label is: {}".format(label))
             print("The prediction is: {}".format(y_))
             print("The totalError is: {}".format(Etotal))
         # image,label = preProcess(lines[50])
         # trainModel(image,label,learning_rate,w1,w2)
+    with open("parameter.txt",'wb+') as fp:
+        for i in range(784):
+            for j in range(100):
+                fp.write("{}\n".format(w1[i,j]))
+        for i in range(100):
+            for j in range(10):
+                fp.write("{}\n".format(w2[i,j]))
+        for i in range(100):
+            fp.write("{}\n".format(b1[i]))
+        for i in range(10):
+            fp.write("{}\n".format(b2[i]))

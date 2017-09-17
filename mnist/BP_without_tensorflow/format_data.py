@@ -43,6 +43,17 @@ def preProcess(line):
     # plt.show()
     return image,label
 
+def preProcess2(line):
+    image = line.split(',')[:-1]
+    label = line.split(',')[-1]
+    for i in range(image.__len__()):
+        image[i] = float(image[i])
+    label = int(label)
+    rawData = np.array(image).reshape((28, 28), order='C')
+    plt.imshow(rawData, cmap='gray')
+    plt.show()
+    return image,label
+
 if __name__ == "__main__":
     myFileOpen('digitstrain.txt')
     processSingleImage('digitstrain.txt')
