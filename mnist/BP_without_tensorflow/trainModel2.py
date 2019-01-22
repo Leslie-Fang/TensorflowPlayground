@@ -59,11 +59,11 @@ def trainModel(epoch,learning_rate):
             if bn:
                 _mean = neth.mean(axis=0, keepdims=True)
                 xmuh = (neth - _mean)
-                var_2 = ((xmuh) ** 2).mean(axis=0, keepdims=True) + 0.01
+                var_2 = ((xmuh) ** 2).mean(axis=0) + 0.01
                 sqrtvarh = np.sqrt(var_2)
                 ivarh = 1. / sqrtvarh
-                neth = (xmuh) * ivarh
-                neth = gamma1.dot(neth)+beta1
+                nethm = (xmuh) * ivarh
+                neth = gamma1.dot(nethm)+beta1
 
             outh = 1/(1+np.exp(-neth))  #outh: (batchsize,100)
 
@@ -72,12 +72,16 @@ def trainModel(epoch,learning_rate):
             if bn:
                 print("use bn")
                 _mean = neto.mean(axis=0, keepdims=True)
-                xmuo = (neto - _mean)
-                var_2 = ((xmuo) ** 2).mean(axis=0, keepdims=True) + 0.01
+                xmuo = (neto - _mean) #xmuo (3000,10)
+                # print("xmuo : {0}".format(xmuo.shape))
+                var_2 = ((xmuo) ** 2).mean(axis=0) + 0.01 #var_2 (10)
+                # print("var_2 : {0}".format(var_2.shape))
                 sqrtvaro = np.sqrt(var_2)
+                # print("sqrtvaro : {0}".format(sqrtvaro.shape))
                 ivaro = 1. / sqrtvaro
-                neto = (xmuo) * ivaro
-                neto = gamma2.dot(neto) + beta2
+                # print("ivaro : {0}".format(ivaro.shape))
+                netom = (xmuo) * ivaro
+                neto = gamma2.dot(netom) + beta2
             outo = softmax(neto) #outo: (batchsize,10)
 
             ## Backpropagation
@@ -88,37 +92,64 @@ def trainModel(epoch,learning_rate):
             D3[range(batchsize),rawLabel] -= 1
             if bn:
                 # update gamma,beta
-                dbeta = np.sum(D3, axis=0)
-                dgammax = D3  # not necessary, but more understandable
-                print dgammax.shape
-                print neto.shape
-                print dgammax.dot(neto.T).shape
-                dgamma = np.sum(dgammax.dot(neto.T), axis=0)
-                print dgamma.shape
+                N, D = D3.shape
+                #step 9
+                dbeta = np.sum(D3, axis=0) #dbeta (10,)
+                dgammax = D3  # not necessary, but more understandable #dgammax: (3000,10)
+
+                #step 8
+                dgamma = np.sum(dgammax.dot(neto.T), axis=0) #dgamma: (3000,)
                 # dneto = dgammax.dot(gamma2)
-                dneto = gamma2.dot(dgammax)
+                # print("dgammax : {0}".format(dgammax.shape))
+                # print("gamma2 : {0}".format(gamma2.shape))
+                dneto = gamma2.dot(dgammax) #dneto: (3000:10)
 
-                divar = np.sum(dneto * xmuo, axis=0)
-                dxmu1 = dneto * ivaro
-                dsqrtvar = -1. / (sqrtvaro ** 2) * divar
-                dvar = 0.5 * 1. / sqrtvaro * dsqrtvar
-                N, D = outo.shape
-                dsq = 1. / N * np.ones((N, D)) * dvar
+                #step 7
+                # print("dneto : {0}".format(dneto.shape))
+                # print("xmuo : {0}".format(xmuo.shape))
+                divar = np.sum(dneto.T.dot(xmuo), axis=0) #divar: (10,)
+                # print("divar : {0}".format(divar.shape))
+                # print("dneto : {0}".format(dneto.shape))
+                # print("ivaro : {0}".format(ivaro.shape))
+                dxmu1 = dneto * ivaro  #dxmu1: (3000,10)
+                # print("dxmu1 : {0}".format(dxmu1.shape))
 
-                dxmu2 = 2 * xmuo * dsq
+                #step 6
+                dsqrtvar = -1. / (sqrtvaro ** 2) * divar #dsqrtvar : (10,)
+                # print("dsqrtvar : {0}".format(dsqrtvar.shape))
 
-                dx1 = (dxmu1 + dxmu2)
-                dmu = -1 * np.sum(dxmu1 + dxmu2, axis=0)
-                dx2 = 1. / N * np.ones((N, D)) * dmu
-                dx = dx1 + dx2
+                # step5
+                dvar = 0.5 * 1. / sqrtvaro * dsqrtvar  #dvar : (10,)
+                # print("dvar : {0}".format(dvar.shape))
+
+                # step4
+                dsq = 1. / N * np.ones((N, D)) * dvar #dsq : (3000, 10)
+                # print("dsq : {0}".format(dsq.shape))
+
+                # step3
+                dxmu2 = 2 * xmuo * dsq  #dxmu2 : (3000, 10)
+                # print("dxmu2 : {0}".format(dxmu2.shape))
+
+                # step2
+                dx1 = (dxmu1 + dxmu2)  #dx1 : (3000, 10)
+                dmu = -1 * np.sum(dxmu1 + dxmu2, axis=0)  # dmu : (10,)
+                # print("dx1 : {0}".format(dx1.shape))
+                # print("dmu : {0}".format(dmu.shape))
+
+                # step1
+                dx2 = 1. / N * np.ones((N, D)) * dmu #dx2 : (3000, 10)
+                # print("dx2 : {0}".format(dx2.shape))
+
+                # step0
+                dx = dx1 + dx2  #dx : (3000, 10)
+                # print("dx : {0}".format(dx.shape))
                 D3 = dx
 
-                print gamma2.shape
-                print dgamma.shape
+                # print("gamma2 : {0}".format(gamma2.shape))
+                # print("dgamma : {0}".format(dgamma.shape))
                 gamma2 -= learning_rate * dgamma
                 beta2 -=  learning_rate * dbeta
-                # print("beta2 is:{0}".format(beta2))
-                # D3 = gamma2.dot(D3)
+
 
             dw2 = outh.T.dot(D3) / batchsize#dw2: (100,10)
             db2 = np.sum(D3,axis=0,keepdims=True) / batchsize #/batchsize normalization
@@ -126,17 +157,18 @@ def trainModel(epoch,learning_rate):
             D2 = D3.dot(w2.T)*(outh*(1-outh)) #D2 : (3000,100)
             if bn:
                 # update gamma,beta
+                N, D = D2.shape
                 dbeta = np.sum(D2, axis=0)
                 dgammax = D2  # not necessary, but more understandable
-                dgamma = np.sum(dgammax * neth, axis=0)
+                dgamma = np.sum(dgammax.dot(neth.T), axis=0)
                 # dneth = dgammax.dot(gamma1)
                 dneth = gamma1.dot(dgammax)
 
-                divar = np.sum(dneth * xmuh, axis=0)
+                divar = np.sum(dneth.T.dot(xmuh), axis=0)
                 dxmu1 = dneth * ivarh
                 dsqrtvar = -1. / (sqrtvarh ** 2) * divar
                 dvar = 0.5 * 1. / sqrtvarh * dsqrtvar
-                N, D = outh.shape
+
                 dsq = 1. / N * np.ones((N, D)) * dvar
 
                 dxmu2 = 2 * xmuh * dsq
@@ -176,4 +208,4 @@ def trainModel(epoch,learning_rate):
 
 
 if __name__ == "__main__":
-    trainModel(1000,0.4)
+    trainModel(100,0.4)

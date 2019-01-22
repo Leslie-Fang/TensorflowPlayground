@@ -33,13 +33,18 @@ def training():
     squared_deltas = tf.square( y_ - y)
     loss = tf.reduce_sum(squared_deltas)
 
+    print(sess.run([W, b]))
     print("sess.run(loss): ", sess.run(loss, {x: trainingData, y_: trainingLabel}))
+    #exit(1)
 
     optimizer = tf.train.GradientDescentOptimizer(0.01)
     train = optimizer.minimize(loss)
 
     for i in range(100):
         sess.run(train, {x: trainingData, y_: trainingLabel})
+        print("step {}:".format(i))
+        print(sess.run([W, b]))
+        print("sess.run(loss): ", sess.run(loss, {x: trainingData, y_: trainingLabel}))
 
     print("sess.run(loss): ", sess.run(loss, {x: trainingData, y_: trainingLabel}))
     print(sess.run([W, b]))
