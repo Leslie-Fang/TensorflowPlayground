@@ -19,7 +19,7 @@ if __name__ == "__main__":
 	epoch = 10
 	print("Begin train!")
 	starttime = datetime.datetime.now()
-	base_path = "/home/mnist_dataset/train_data"
+	base_path = os.path.join(os.getcwd(),"train_data")
 	train_image_path = os.path.join(base_path,"train-images-idx3-ubyte")
 	train_label_path = os.path.join(base_path,"train-labels-idx1-ubyte")
 	train_labels_data = train_labels(train_label_path)

@@ -11,7 +11,8 @@ from inference_labels import inference_labels
 #train_epoch:2 accuracy:0.4951
 if __name__ == "__main__":
 	print("Begin inference!")
-	base_path = "/home/mnist_dataset"
+	#base_path = "/home/mnist_dataset"
+	base_path = os.getcwd()
 	base_inference_path = os.path.join(base_path,"test_data")
 	inference_image_path = os.path.join(base_inference_path,"t10k-images-idx3-ubyte")
 	inference_label_path = os.path.join(base_inference_path,"t10k-labels-idx1-ubyte")
