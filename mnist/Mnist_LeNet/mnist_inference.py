@@ -8,7 +8,8 @@ import os
 from inference_images import inference_images
 from inference_labels import inference_labels
 
-#train_epoch:2 accuracy:0.4951
+#不加dropout层：train_epoch:2 accuracy:0.9804
+#加dropout层：train_epoch:2 accuracy:0.9766
 if __name__ == "__main__":
 	print("Begin inference!")
 	base_path = os.getcwd()
@@ -43,7 +44,8 @@ if __name__ == "__main__":
 			Ys = sess.graph.get_tensor_by_name('Ys:0')
 			X = sess.graph.get_tensor_by_name('X:0')
 			Y_ = sess.graph.get_tensor_by_name('Y_:0')
-			results = sess.run(Ys,feed_dict={X:inference_x, Y_:inference_y})
+			keep_prob = sess.graph.get_tensor_by_name('keep_prob:0')
+			results = sess.run(Ys,feed_dict={X:inference_x, Y_:inference_y, keep_prob:0.4})
 			for image_number in range(batchsize):
 				maxindex  = np.argmax(results[image_number])
 				true_label = np.argmax(inference_y[image_number])
