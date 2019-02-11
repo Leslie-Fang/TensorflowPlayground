@@ -62,5 +62,13 @@ BN层(Batch Normalization)：
 介绍：https://zhuanlan.zhihu.com/p/29957294
 TF API：
 
+训练：
+python train.py
+推理：
+python inference.py
+
+训练过程的参数，参考了代码:
+https://github.com/ryujaehun/alexnet/blob/master/codes/train.py
+
 ## 读取分类图片
 使用python opencv
