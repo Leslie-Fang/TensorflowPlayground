@@ -20,19 +20,14 @@ https://www.zhihu.com/question/273633408/answer/369134332
 https://gist.github.com/maraoz/388eddec39d60c6d52d4
 http://www.image-net.org/download-API
 
-## 或者直接下载imagenet 2014的数据集合(推荐使用这种方式)
+## 或者直接下载imagenet 2014的数据集合(**推荐使用这种方式**)
 http://image-net.org/challenges/LSVRC/2014/download-images-5jj5.php
 数据格式
 There are a total of 456567 images for training. The number of positive images for each synset (category) ranges from 461 to 67513. The number of negative images ranges from 42945 to 70626 per synset. There are 20121 validation images, and 40152 test images. All images are in JPEG format.
 
 1. 下载train，validation和test数据集合
-2. 数据的含义下载链接里面的develop-kit
-Please be sure to consult the included readme.txt file for competition details. Additionally, the development kit includes:
-Overview and statistics of the data.
-Meta data for the competition categories.
-Matlab routines for evaluating submissions.
-
-参考readme.txt去解析所有的文件内容
+2. 数据的含义下载链接里面的develop-kit这个链接
+解压之后里面有个readme.txt，去解析所有的文件内容
 
 
 ## 正负样本
@@ -69,4 +64,3 @@ TF API：
 
 ## 读取分类图片
 使用python opencv
-
