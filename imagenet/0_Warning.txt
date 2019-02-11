@@ -1,7 +1,0 @@
-
-BLOCKED FILE ALERTA file has been blocked due to the 'Intel Email File Filtering Policy' rule.Context: 'meta_clsloc.mat'Disallowed due to filenameTicket Number: '0da8-5c61-888c-0001'
-
-----------------------------------------
-
-BLOCKED FILE ALERTA file has been blocked due to the 'Intel Email File Filtering Policy' rule.Context: 'meta_det.mat'Disallowed due to filenameTicket Number: '0da8-5c61-888c-0001'
-See your system administrator for further information. Copyright 1999-2011 McAfee, Inc.All Rights Reserved.http://www.mcafee.com
