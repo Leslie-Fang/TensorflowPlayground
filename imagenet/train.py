@@ -9,10 +9,12 @@ import datetime
 
 epoch_num = 1
 batchsize = 128
-log_step = 100
+log_step = 10
 learning_rate = 0.001
 start_dir = 0
 start_image = 0
+
+#epoch_num:1,time:5600s,accuracy:0
 
 if __name__ == "__main__":
 	#build alexnet model
@@ -96,6 +98,8 @@ if __name__ == "__main__":
 	layer8_fc = tf.add(tf.matmul(h_fc2_drop,layer8_weights),layer8_bias)
 	Ys = tf.nn.softmax(layer8_fc,name="Ys")#shape [None,1000]
 	cross_entropy = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=layer8_fc, labels=Y_, name='cross-entropy'))
+	#L2 regularization（权重衰减）
+	#在代价函数后面再加上一个正则化项,http://blog.sina.com.cn/s/blog_a89e19440102x1el.html
 	lmbda = 5e-05
 	l2_loss = tf.reduce_sum(lmbda * tf.stack([tf.nn.l2_loss(v) for v in tf.get_collection('weights')]))
 	loss = cross_entropy + l2_loss
@@ -107,6 +111,7 @@ if __name__ == "__main__":
 	starttime = datetime.datetime.now()
 	with tf.Session() as sess:
 		sess.run(tf.global_variables_initializer())
+		global_step = 0
 		for epoch in range(epoch_num):
 			start_dir = 0
 			start_image = 0
@@ -114,23 +119,26 @@ if __name__ == "__main__":
 			while True:
 				returen_val = readImages(batchsize,start_dir,start_image)
 				if returen_val['statue'] == -1:
-					print("Finish epoch:{}".format(epoch+1))
+					print("returen_val['statue']:-1 Finish epoch:{},step of epoch is:{},global_step is:{},batchsize is:{},learning_rate is {}".format(epoch+1,step,global_step,batchsize,learning_rate))
 					break#剩下的图片不够一次运算，直接开始下个epoch
 				train_x = np.array(returen_val['data'],dtype=np.float32)
-				# print(train_x[0][0][0])
-				# print(train_x.shape)
-				# exit(1)
 				train_y = np.array(returen_val['label'],dtype=np.float32)
 				start_dir = returen_val['return_dir']
 				start_image = returen_val['return_image']
 
 				#for test
-				yyy = sess.run(Y_,feed_dict={X:train_x, Y_:train_y, keep_prob1:0.5, keep_prob2:0.5})
-				yyys = sess.run(Ys,feed_dict={X:train_x, Y_:train_y, keep_prob1:0.5, keep_prob2:0.5})
-				print("yyy is:{}".format(yyy))
-				print("yyys is:{}".format(yyys))
-				c = sess.run(loss,feed_dict={X:train_x, Y_:train_y, keep_prob1:0.5, keep_prob2:0.5})
-				print("loss is:{}".format(c))
+				# yyy = sess.run(Y_,feed_dict={X:train_x, Y_:train_y, keep_prob1:0.5, keep_prob2:0.5})
+				# yyys = sess.run(Ys,feed_dict={X:train_x, Y_:train_y, keep_prob1:0.5, keep_prob2:0.5})
+				# print("yyy is:{}".format(yyy))
+				# print("yyys is:{}".format(yyys))
+				# c = sess.run(loss,feed_dict={X:train_x, Y_:train_y, keep_prob1:0.5, keep_prob2:0.5})
+				# print("loss is:{}".format(c))
+				# results = sess.run(Ys,feed_dict={X:train_x, Y_:train_y,keep_prob1:0.5, keep_prob2:0.5})
+				# for image_number in range(batchsize):
+				# 	maxindex  = np.argmax(results[image_number])
+				# 	true_label = np.argmax(train_y[image_number])
+				# 	print("maxindex is: {}".format(maxindex))
+				# 	print("true_label is: {}".format(true_label))
 				#exit(1)
 
 				#train
@@ -142,10 +150,12 @@ if __name__ == "__main__":
 					c = sess.run(loss,feed_dict={X:train_x, Y_:train_y, keep_prob1:0.5, keep_prob2:0.5})
 					print("epoch:{0}, Step:{1}, loss:{2}".format(epoch+1,step,c))
 				step = step + 1
+				global_step = global_step + 1
+				#if global_step == 
 				if returen_val['statue'] == -2:
-					print("Finish epoch:{}".format(epoch+1))
+					print("returen_val['statue']:-2 Finish epoch:{},step of epoch is:{},global_step is:{},batchsize is:{},learning_rate is {}".format(epoch+1,step,global_step,batchsize,learning_rate))
 					break#剩下的图片不够下次读取，开始下个epoch
-		print("Running configuration learning_rate:{}, batchsize:{}, epoch:{}".format(learning_rate,batchsize,epoch))
+		print("Running configuration learning_rate:{}, batchsize:{}, epoch:{}".format(learning_rate,batchsize,epoch+1))
 		endtime = datetime.datetime.now()
 		print("The program takes:{} sec".format((endtime - starttime).seconds))
 		base_path = os.getcwd()

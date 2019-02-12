@@ -61,19 +61,7 @@ def readImages(batchsize, start_dir, start_image):
 				for p in range(len(img[0])):
 					single_img3 = []
 					for q in range(len(img[0][0])):
-						# origin = img[m][p][q]
-						# print(origin)
-						# print(float(img[m][p][q]))
-						#img[m][p][q] = float(img[m][p][q])/255 #很重要，一定要归一到255
-						niii = float(img[m][p][q])/255.0
-						# #print(img[m][p][q])
-						#print(niii)
-						# img[m][p][q] = niii
-						# print(img[m][p][q])
-						# if niii > 0:
-						# 	exit(1)
-						# if niii >= 1 or niii <= -1:
-						# 	print("img[m][p][q] is {}, niii is:{}".format(img[m][p][q],niii))
+						niii = float(img[m][p][q])/255.0#很重要，一定要归一到255
 						single_img3.append(niii)
 					single_img2.append(single_img3)
 				single_img1.append(single_img2)
@@ -95,6 +83,9 @@ def readImages(batchsize, start_dir, start_image):
 				returen_val['return_dir'] = return_dir
 				returen_val['return_image'] = return_image
 				return returen_val
+			if j >= len(images)-1:
+				#移动到下一个dir的时候从头开始读取图片
+				start_image = 0 
 	if readed_image_number < batchsize:
 		returen_val['statue'] = -1 #剩下的所有图片都不够1个batchsize的情况下
 		return returen_val

@@ -49,7 +49,7 @@ def get_inference_data(batchsize,start_point):
 			returen_val['label'] = return_labels
 			return returen_val
 
-batchsize = 128
+batchsize = 1
 start_point = 0
 right_count = 0
 if __name__ == "__main__":
@@ -59,7 +59,7 @@ if __name__ == "__main__":
 		with open(os.path.join(base_path,pb_file), 'rb') as graph:
 			graph_def = tf.GraphDef()
 			graph_def.ParseFromString(graph.read())
-				# 获取需要进行计算的operator
+			# 获取需要进行计算的operator
 			Y_,X,keep_prob1,keep_prob2,Ys = tf.import_graph_def(graph_def, return_elements=['Y_:0','X_:0','keep_prob1:0','keep_prob2:0','Ys:0'])
 			while True:
 				input_data = get_inference_data(batchsize,start_point)
@@ -69,10 +69,13 @@ if __name__ == "__main__":
 				for image_number in range(batchsize):
 					maxindex  = np.argmax(results[image_number])
 					true_label = np.argmax(inference_y[image_number])
+					print("maxindex is: {}".format(maxindex))
+					print("true_label is: {}".format(true_label))
 					if maxindex == true_label:
 						right_count = right_count + 1
 				start_point = start_point + batchsize 
 				if (start_point + batchsize) > 50000:
+				#if (start_point + batchsize) > 1000:
 				#if True:
 					print("Not enough images for next round. Finished inference!")
 					print("right_count is:{}".format(right_count))
