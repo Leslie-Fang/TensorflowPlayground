@@ -13,6 +13,9 @@ import cv2
 import numpy as np
 
 TrainData_base_Url = "/home/lesliefang/il2014_CLS_LOC/train_data"
+dirs = os.listdir(TrainData_base_Url)
+meta_file = os.path.join(os.getcwd(),"ILSVRC2014_devkit/data/meta_clsloc.mat")
+WNID2ID = load_meta_clsloc.getData(meta_file)
 
 def untarAllTrainData():
 	#运行一次，用于解压所有train的数据
@@ -32,9 +35,6 @@ def readImages(batchsize, start_dir, start_image):
 	return_labels = []
 	returen_val = {}
 	readed_image_number = 0
-	meta_file = os.path.join(os.getcwd(),"ILSVRC2014_devkit/data/meta_clsloc.mat")
-	WNID2ID = load_meta_clsloc.getData(meta_file)
-	dirs = os.listdir(TrainData_base_Url)
 	for i in range(start_dir,len(dirs)):
 		dir = dirs[i]
 		label_value = WNID2ID[dir]
@@ -52,19 +52,20 @@ def readImages(batchsize, start_dir, start_image):
 			img = cv2.imread(os.path.join(dir_path,image))
 			# print(img.shape)#每张图片的shape都不一样，统一缩放到227*227*3
 			img = cv2.resize(img, (227, 227), interpolation=cv2.INTER_CUBIC)#每张图片的shape都不一样，统一缩放到227*227*3
-			# print(img.shape)
-			single_img1 = []
-			single_img2 = []
-			single_img3 = []
-			for m in range(len(img)):
-				single_img2 = []
-				for p in range(len(img[0])):
-					single_img3 = []
-					for q in range(len(img[0][0])):
-						niii = float(img[m][p][q])/255.0#很重要，一定要归一到255
-						single_img3.append(niii)
-					single_img2.append(single_img3)
-				single_img1.append(single_img2)
+			# single_img1 = []
+			# single_img2 = []
+			# single_img3 = []
+			# for m in range(len(img)):
+			# 	single_img2 = []
+			# 	for p in range(len(img[0])):
+			# 		single_img3 = []
+			# 		for q in range(len(img[0][0])):
+			# 			niii = float(img[m][p][q])/255.0#很重要，一定要归一到255
+			# 			single_img3.append(niii)
+			# 		single_img2.append(single_img3)
+			# 	single_img1.append(single_img2)
+			single_img1 = (img.astype(np.float32)/255.0).tolist()#优化图片读取时的转换过程
+
 			return_images.append(single_img1)
 			return_labels.append(label)
 			readed_image_number = readed_image_number + 1
@@ -89,8 +90,6 @@ def readImages(batchsize, start_dir, start_image):
 	if readed_image_number < batchsize:
 		returen_val['statue'] = -1 #剩下的所有图片都不够1个batchsize的情况下
 		return returen_val
-
-
 
 if __name__ == "__main__":
 	#untarAllTrainData()

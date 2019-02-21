@@ -7,7 +7,7 @@ from prepare_data import readImages
 import tensorflow as tf
 import datetime
 
-epoch_num = 1
+epoch_num = 20
 batchsize = 128
 log_step = 10
 learning_rate = 0.001
@@ -106,10 +106,13 @@ if __name__ == "__main__":
 	train_op = tf.train.AdamOptimizer(learning_rate=learning_rate).minimize(loss)	
 	# loss = -tf.reduce_mean(Y_*tf.log(Ys))
 	# train_op = tf.train.AdamOptimizer(learning_rate=learning_rate).minimize(loss)
-
+	config = tf.ConfigProto()
+	config.intra_op_parallelism_threads = 20
+	config.inter_op_parallelism_threads = 1
+	config.use_per_session_threads = 1
 	print('before start')
 	starttime = datetime.datetime.now()
-	with tf.Session() as sess:
+	with tf.Session(config=config) as sess:
 		sess.run(tf.global_variables_initializer())
 		global_step = 0
 		for epoch in range(epoch_num):
