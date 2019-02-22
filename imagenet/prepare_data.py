@@ -11,11 +11,14 @@ import os
 from ILSVRC2014_devkit.data import load_meta_clsloc
 import cv2
 import numpy as np
+import threading
+import Queue
 
 TrainData_base_Url = "/home/lesliefang/il2014_CLS_LOC/train_data"
 dirs = os.listdir(TrainData_base_Url)
 meta_file = os.path.join(os.getcwd(),"ILSVRC2014_devkit/data/meta_clsloc.mat")
 WNID2ID = load_meta_clsloc.getData(meta_file)
+que = Queue.Queue()
 
 def untarAllTrainData():
 	#运行一次，用于解压所有train的数据
@@ -29,6 +32,156 @@ def untarAllTrainData():
 		directory = file.split('.')[0]
 		print directory
 		os.system("cd {0} && mkdir {1} && tar xvf {2} -C {3} && rm -rf {4}".format(TrainData_base_Url,directory,file,directory,file))
+
+def sub_readImages_v2(batchsize, start_dir, start_image):
+	sub_return_images = []
+	sub_return_labels = []
+	sub_returen_val = {}
+	readed_image_number = 0
+	global que
+	for i in range(start_dir,len(dirs)):
+		dir = dirs[i]
+		label_value = WNID2ID[dir]
+		label = np.zeros((1000,), dtype=int) #总共1000个类别
+		label[label_value-1] = 1
+		dir_path = os.path.join(TrainData_base_Url,dir)
+		images = os.listdir(dir_path)
+		for j in range(start_image,len(images)):
+			image = images[j]
+			img = cv2.imread(os.path.join(dir_path,image))
+			img = cv2.resize(img, (227, 227), interpolation=cv2.INTER_CUBIC)
+			single_img1 = (img.astype(np.float32)/255.0).tolist()#优化图片读取时的转换过程
+
+			sub_return_images.append(single_img1)
+			sub_return_labels.append(label)
+			readed_image_number = readed_image_number + 1
+			if readed_image_number >= batchsize:
+				sub_returen_val['statue'] = 1
+				if (j+1) < len(images):
+					return_dir = i
+					return_image = j + 1
+				else:
+					return_dir = i + 1
+					if return_dir >= len(dirs):
+						sub_returen_val['statue'] = -2#正好读完所有图片，不支持下一次去读了
+					return_image = 0
+				sub_returen_val['data'] = sub_return_images
+				sub_returen_val['label'] = sub_return_labels
+				sub_returen_val['return_dir'] = return_dir
+				sub_returen_val['return_image'] = return_image
+				que.put(sub_returen_val)
+				return sub_returen_val
+			if j >= len(images)-1:
+				#移动到下一个dir的时候从头开始读取图片
+				start_image = 0
+	if readed_image_number < batchsize:
+		sub_returen_val['statue'] = -1 #剩下的所有图片都不够1个batchsize的情况下
+		que.put(sub_returen_val)
+		return sub_returen_val
+
+def readImages_v2(batchsize, start_dir, start_image):
+	returen_val = {}
+	returen_val['data'] = []
+	returen_val['label'] = []
+	thread_num = 4
+	threads = []
+	sub_batchsize = batchsize/thread_num
+
+	start_dirs = []
+	start_images = []
+	#获得每个线程应该读取的图片的起点位置
+	start_dirs.append(start_dir)
+	start_images.append(start_image)
+
+	temp_start_dir = start_dirs[0]
+	temp_start_image = start_images[0]
+	temp_batchsize = sub_batchsize
+	while True:
+		dir = dirs[temp_start_dir]
+		dir_path = os.path.join(TrainData_base_Url,dir)
+		images = os.listdir(dir_path)
+		left_image_num = len(images)-temp_start_image
+		if left_image_num > temp_batchsize:
+			start_dirs.append(temp_start_dir)
+			start_images.append(temp_start_image + temp_batchsize)
+			break
+		else:
+			temp_start_dir = temp_start_dir + 1
+			if temp_start_dir >= len(dirs):
+				returen_val['statue'] = -1 #剩下的所有图片都不够1个batchsize的情况下
+				return returen_val
+			temp_start_image = 0
+			temp_batchsize = temp_batchsize - left_image_num
+
+	temp_start_dir = start_dirs[1]
+	temp_start_image = start_images[1]
+	temp_batchsize = sub_batchsize
+	while True:
+		dir = dirs[temp_start_dir]
+		dir_path = os.path.join(TrainData_base_Url,dir)
+		images = os.listdir(dir_path)
+		left_image_num = len(images)-temp_start_image
+		if left_image_num > temp_batchsize:
+			start_dirs.append(temp_start_dir)
+			start_images.append(temp_start_image + temp_batchsize)
+			break
+		else:
+			temp_start_dir = temp_start_dir + 1
+			if temp_start_dir >= len(dirs):
+				returen_val['statue'] = -1 #剩下的所有图片都不够1个batchsize的情况下
+				return returen_val
+			temp_start_image = 0
+			temp_batchsize = temp_batchsize - left_image_num
+
+	temp_start_dir = start_dirs[2]
+	temp_start_image = start_images[2]
+	temp_batchsize = sub_batchsize
+	while True:
+		dir = dirs[temp_start_dir]
+		dir_path = os.path.join(TrainData_base_Url,dir)
+		images = os.listdir(dir_path)
+		left_image_num = len(images)-temp_start_image
+		if left_image_num > temp_batchsize:
+			start_dirs.append(temp_start_dir)
+			start_images.append(temp_start_image + temp_batchsize)
+			break
+		else:
+			temp_start_dir = temp_start_dir + 1
+			if temp_start_dir >= len(dirs):
+				returen_val['statue'] = -1 #剩下的所有图片都不够1个batchsize的情况下
+				return returen_val
+			temp_start_image = 0
+			temp_batchsize = temp_batchsize - left_image_num
+
+	return_images = []
+	return_labels = []
+	global que
+	with que.mutex:
+		que.queue.clear()
+	for i in range(thread_num):
+		t = threading.Thread(target=sub_readImages_v2,args=(sub_batchsize,start_dirs[i],start_images[i]))
+		threads.append(t)
+	for i in range(thread_num):
+		threads[i].start()
+	for i in range(thread_num):
+		threads[i].join()
+
+	for i in range(thread_num):
+		result = que.get()
+		if result['statue'] != 1:
+			returen_val['statue'] = -1
+			break
+		else:
+			returen_val['statue'] = 1
+		if i == 3:
+			returen_val['return_dir'] = result['return_dir']
+			returen_val['return_image'] = result['return_image']
+		for item in result['data']:
+			returen_val['data'].append(item)
+		for item in result['label']:
+			returen_val['label'].append(item)
+
+	return returen_val
 
 def readImages(batchsize, start_dir, start_image):
 	return_images = []

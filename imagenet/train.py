@@ -4,6 +4,7 @@ from ILSVRC2014_devkit.data import load_meta_clsloc
 import cv2
 import numpy as np
 from prepare_data import readImages
+from prepare_data import readImages_v2
 import tensorflow as tf
 import datetime
 
@@ -120,7 +121,11 @@ if __name__ == "__main__":
 			start_image = 0
 			step = 0
 			while True:
-				returen_val = readImages(batchsize,start_dir,start_image)
+				#start_read_image_time = datetime.datetime.now()
+				returen_val = readImages(batchsize,start_dir,start_image)#readImages takes 5 or 6 or 7 second
+				#returen_val = readImages_v2(batchsize,start_dir,start_image)#readImages_v2 takes 6 or 7s
+				#end_read_image_time = datetime.datetime.now()
+				#print("Read Images takes:{} sec".format((end_read_image_time - start_read_image_time).seconds))
 				if returen_val['statue'] == -1:
 					print("returen_val['statue']:-1 Finish epoch:{},step of epoch is:{},global_step is:{},batchsize is:{},learning_rate is {}".format(epoch+1,step,global_step,batchsize,learning_rate))
 					break#剩下的图片不够一次运算，直接开始下个epoch
